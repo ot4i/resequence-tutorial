@@ -59,23 +59,23 @@
             "outcomeList": 
 			[
                 {
-                    "title": "Use IBM Integration Bus to resequence messages through a flow"
+                    "title": "Use IBM App Connect Enterprise to resequence messages through a flow"
                 }
             ],
             "summary": 
 			{
                 "overviewName": "OVERVIEW",
-                "_overviewComment": "A short description of what happens in this tutorial, and an optional short explanation of the IIB concepts used in this tutorial if necessary for context. What background knowledge must the user have for this to make sense?",
+                "_overviewComment": "A short description of what happens in this tutorial, and an optional short explanation of the ACE concepts used in this tutorial if necessary for context. What background knowledge must the user have for this to make sense?",
                 "sections": 
 				[
                     {
                         "section": "This tutorial demonstrates a simple message flow that receives a file containing a set of employee records in a CSV format. The input file is line feed separated, with one row for each employee. Each row uses commas to separate the fields. The last field in each row is a sequence number. The flow uses a FileInput node to read the data rows into the flow one by one. The test data provided deliberately has the input records in the wrong order. A resequence node is used to reorder the messages into the correct sequence. At the end of the message flow, all the data rows are added to an output file."
                     },
                     {
-                        "section": "This tutorial requires an IIB node which is associated with a local queue manager."
+                        "section": "This tutorial requires an ACE integration node (or standalone server) which is associated with a local queue manager."
                     },
                     {
-                        "section": "In IBM Integration Bus, an application is a container for deployed resources such as message flows. This tutorial provides a single application, holding one message flow, and which references a shared library containing a DFDL message model which describes the CSV data format expected by the flow."
+                        "section": "In IBM App Connect Enterprise, an application is a container for deployed resources such as message flows. This tutorial provides a single application, holding one message flow, and which references a shared library containing a DFDL message model which describes the CSV data format expected by the flow."
                     }
                 ]
             },
@@ -156,38 +156,39 @@
                     "sections": 
 		     [
                 {
-                     "section":"The message flow in this tutorial uses a resequence node, which uses MQ storage queues to hold information about the state of in-flight messages. The storage queues are owned by the queue manager that is associated with the integration node. If you have already associated your integration node with a queue manager (for example by using the -q property of the <code><span class='cmdname'>mqsicreatebroker</span></code> command) then you do not need to follow the first two steps below.",
+                     "section":"The message flow in this tutorial uses a resequence node, which uses MQ storage queues to hold information about the state of in-flight messages. The storage queues are owned by the queue manager that is associated with the integration node or integration server. The instructions provided below assume the use of an integration node.",
                      "steps":{
                         "type":"ordered",
                         "details":[
-                           {
-                              "details":"Create the default IBM Integration Bus queues in WebSphere MQ by completing the following steps:",
+{
+                              "details":"Create the default App Connect Enterprise queues in IBM MQ by completing the following steps:",
                               "substeps":{
                                  "type":"ordered",
                                  "details":[
                                     {
-                                       "details":"Open the IBM Integration Console."
+                                       "details":"Open the IBM App Connect Enterprise Console. If you don't already have one, create and start a queue manager:<br><code><span class='cmdname'>crtmqm</span> <span class='varname'> qmgr</span></code><br><code><span class='cmdname'>strmqm</span> <span class='varname'> qmgr</span></code>"
                                     },
                                     {
-                                       "details":"In the console window, type the following command:<br><code>server\\sample\\wmq\\iib_createqueues <span class='varname'>qmgr</span></code><br>where <span class='varname'>qmgr</span> is the queue manager name."
-                                    }
+                                       "details":"Next create the queues by typing the following command:<br><code>server\\sample\\wmq\\iib_createqueues <span class='varname'>qmgr</span></code><br>where<br><span class='varname'>qmgr</span> is the queue manager name."
+                                    }									
                                  ]
                               }
-                           },
+                           },                           
                            {
-                              "details":"Associate the default integration node with the queue manager by completing the following steps:",
+                              "details":"Create an integration node which is associated with the above queue manager by completing the following steps:",
                               "substeps":{
                                  "type":"ordered",
                                  "details":[
                                     {
-                                       "details":"In the console window, stop the default integration node by typing the following command:<br><code><span class='cmdname'>mqsistop</span> -i <span class='varname'>TESTNODE_userid</span></code>"
+                                       "details":"In the console window, create an integration node by typing the following command:<br><code><span class='cmdname'>mqsicreatebroker</span> <span class='varname'>TESTNODE</span> -q <span class='varname'>qmgr</span></code>"
+                                    },
+									{
+                                       "details":"Start the integration node by typing the following command:<br><code><span class='cmdname'>mqsistart</span> <span class='varname'>TESTNODE</span></code>"
                                     },
                                     {
-                                       "details":"Associate the queue manager with the default integration node, <span class='varname'>TESTNODE_userid</span> by typing the following command:<br><code><span class='cmdname'>mqsichangebroker</span> <span class='varname'>TESTNODE_userid</span> -q <span class='varname'>qmgr</span></code><br>where<br><span class='varname'>qmgr</span> is the queue manager name"
-                                    },
-                                    {
-                                       "details":"Start the default integration node by typing the following command:<br><code><span class='cmdname'>mqsistart</span> <span class='varname'>TESTNODE_userid</span></code>"
+                                       "details":"Create an integration server associated with the integration node by typing the following command:<br><code><span class='cmdname'>mqsicreateexecutiongroup</span> <span class='varname'>TESTNODE</span> -e <span class='varname'>default</span></code>"
                                     }
+
                                  ]
                               }
                            },
@@ -231,7 +232,7 @@
                                         "details": 
 								        [
                                         {
-                                          "details": "Click the Flow Exerciser icon <img src='http://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/startFlowExerciser.png' alt='' /> to start testing the flow"
+                                          "details": "Click the Flow Exerciser icon <img src='https://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/startFlowExerciser.png' alt='' /> to start testing the flow"
                                         },
                                         {
                                             "details": "A test input file <span class='resource'>input.csv</span> is provided in the Resquence application. Copy this to the input directory which you configured in the Prepare step (by default this is <span class='varname'>C:\\IIB_Resequence_Tutorial_Input</span>)."
@@ -240,7 +241,7 @@
                                             "details": "Navigate to the output directory which you configured in the Prepare step (by default this is <span class='varname'>C:\\IIB_Resequence_Tutorial_Output</span>) and open the output file, <span class='resource'>output.csv</span>. You will see that the output file has the rows rearranged into the correct order based upon their sequence numbers at the end of each row of data:<br><span class='resource'>Department01,Smith,Robert,Brandon,1988-03-24,1<br>Department01,Johnson,John,Martin,1986-01-23,2<br>Department01,Jones,Arya,Cat,1986-02-19,3<br>Department01,Bonham,John,Henry,1948-05-31,4<br>Department01,Walters,Amanda,Louise,1966-08-01,5</span>"
                 				        },
                                         {
-                                            "details": "Return to <span class='resource'>Resequence.msgflow</span> and click the View Path icon <img src='http://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/viewPath.png' alt='' /> to see the path which the file data took through the flow. Click on the flow wires before and after the resequence node to view the message data. You will see that there is a drop down box which enables you to view the messages in the order in which they passed through the flow. Note that the order is different before and after the resequence node."
+                                            "details": "Return to <span class='resource'>Resequence.msgflow</span> and click the View Path icon <img src='https://ot4i.github.io/ot4i.tutorials//dist/images/icons/iib/viewPath.png' alt='' /> to see the path which the file data took through the flow. Click on the flow wires before and after the resequence node to view the message data. You will see that there is a drop down box which enables you to view the messages in the order in which they passed through the flow. Note that the order is different before and after the resequence node."
                                         }
                                         ]
                                         }
@@ -269,19 +270,7 @@
                             "link": "com.ibm.etools.mft.doc/rt26110_.htm"
                         }
                     ]
-                },
-		"exits": 
-		{
-			"title": "Run Exits",
-			"details": 
-			[
-				{
-					"name": "Clean Up",
-					"description": "Clean up and remove any changes in your workspace made by the tutorial.",
-					"method": "cleanUp()"
-				}
-			]
-		}
+                }
             }
         }
     }
